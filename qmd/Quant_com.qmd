@@ -1,0 +1,53 @@
+---
+title: "Quant_com"
+format: 
+  pdf:
+    include-in-header:
+      text: |
+        % tables
+        \usepackage[l3]{csvsimple}
+        \usepackage{nicematrix}
+        \usepackage{multirow} % merge rows / columns
+        \usepackage{booktabs}
+        
+        % right aligned columns in nicematrix
+        \newcolumntype{Y}{>{\raggedleft\arraybackslash}X}
+        
+        % Captions and labels (Makes our Caption labels Grey and uppercase :D)
+        \usepackage[singlelinecheck=off, font=small]{caption}
+        \DeclareCaptionLabelFormat{AnimEco}{\textbf{\color{darkgray!75}\MakeUppercase{#1 #2}}}
+        \captionsetup{labelformat=AnimEco,labelsep=quad}
+        
+        % equation labels
+        \usepackage{mathtools,amssymb,amsthm}
+        \newtagform{Eq}{(Eq. }{)}
+        \usetagform{Eq}
+editor: visual
+csl: apa.csl
+bibliography: Quant_Com_Group.bib
+---
+
+## Quantitative Community Ecology in R
+
+Test for Zotero Group Bib: @smilauer2014
+
+[@smilauer2014]
+
+... sweet, works so far
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
