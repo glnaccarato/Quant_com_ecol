@@ -34,21 +34,28 @@ bibliography: Quant_Com_Group.bib
 
 **Course:** Quantitative Community Ecology in R
 
-**Authors:** Evangelos Karapoulis, Julian Thiem, Gian Luca Naccarato
+**Authors:** Evangelos Karapoulis, Julian Nico Thiem, Gian Luca Naccarato
 
-**Supervisors:** Oksana Buzhdygan & Felix May
+**Supervisors:** Felix May & Oksana Buzhdygan - Theoretical Ecology Lab
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+## Task 2) 
 
-```{r}
-1 + 1
-```
+### Step by step
 
-You can add options to executable code like this
+1\) Does data responds linearly? –\> DCA to access gradient length (\< 3 = Linear); In any case I personally prefer to use distance-based methods; The most widely used method in ecology is nowadays an NMDS with post-hoc vector analysis; Since we‘re dealing with abundance data I would suggest using the Bray-Curtis Dissimilarity as distance matrix
 
-```{r}
-#| echo: false
-2 * 2
-```
+2\) Constrained or unconstrained methods? In our case we do have predictors, but again, I would prefer using an NMDS and post-hoc vector fitting using either the envit() function or the ordisurf() function
 
-The `echo: false` option disables the printing of code (only output is displayed).
+... but first lets see how the data looks like etc.
+
+					
+
+				
+
+			
+
+		
+
+	
+
+## 

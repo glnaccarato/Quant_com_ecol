@@ -83,3 +83,32 @@
 #       frequently at high and low plant diversity levels.
 #     o Identify the arthropod taxa that associate most with grasses.
 
+
+# Task 2 - Data analysis --------
+
+## Preparation
+
+# Import data
+
+# species data
+spec_dat <- read.csv("data/JenaExp_arthropod_taxa.csv")
+
+# environmental data
+env_dat <- read.csv("data/JenaExp_treatments.csv")
+
+# check both data sets for NA‘s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
