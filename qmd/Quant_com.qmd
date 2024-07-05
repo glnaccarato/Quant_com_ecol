@@ -1,5 +1,4 @@
 ---
-title: "Quant_com"
 format: 
   pdf:
     include-in-header:
@@ -27,15 +26,17 @@ csl: apa.csl
 bibliography: Quant_Com_Group.bib
 ---
 
-## Quantitative Community Ecology in R
+# Analysing: 
 
-Test for Zotero Group Bib: @smilauer2014
+# 1) Biodiversity of ant communities along an elevational gradient and 
 
-[@smilauer2014]
+# 2) Taxonomic composition of arthropods along plant diversity gradient in the Jena Experiment
 
-... sweet, works so far
+**Course:** Quantitative Community Ecology in R
 
-## Running Code
+**Authors:** Evangelos Karapoulis, Julian Thiem, Gian Luca Naccarato
+
+**Supervisors:** Oksana Buzhdygan & Felix May
 
 When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
