@@ -86,7 +86,12 @@
 
 # Task 2 - Data analysis --------
 
-## Preparation
+# libraries needed
+library(vegan)
+
+
+
+## Preparation -----
 
 # Import data
 
@@ -97,8 +102,29 @@ spec_dat <- read.csv("data/JenaExp_arthropod_taxa.csv")
 env_dat <- read.csv("data/JenaExp_treatments.csv")
 
 # check both data sets for NA‘s
+anyNA(spec_dat) # no NA's
+anyNA(env_dat) # no NA's
 
 
+# Further steps (just notes so far!!!)
+
+# 1. Using the first Detrended Component Analysis (DCA) axis to detect,
+#    if species response is rather linear or unimodel along the 
+#    enivironmental gradient 
+
+# perform DCA to check for first axis length
+decorana(spec_dat[,-1]) # 1.5048 = short gradient 
+
+# indicates a homogeneous dataset
+#   - linear (< 3 SD) as well as distance-based methods are suitable, but 
+#     linear methods are more powerful
+
+#   - we have to chose between:
+#       1. Constrained ordination methods:
+#             - Redundancy Analysis (RDA)
+#             - Distance-based Rudundancy Analysis (db-RDA)
+
+# or we choose a non-linear distance-based approach NMDs
 
 
 

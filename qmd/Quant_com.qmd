@@ -26,9 +26,9 @@ csl: apa.csl
 bibliography: Quant_Com_Group.bib
 ---
 
-# Analysing: 
+# Analysing:
 
-# 1) Biodiversity of ant communities along an elevational gradient and 
+# 1) Biodiversity of ant communities along an elevational gradient and
 
 # 2) Taxonomic composition of arthropods along plant diversity gradient in the Jena Experiment
 
@@ -38,24 +38,12 @@ bibliography: Quant_Com_Group.bib
 
 **Supervisors:** Felix May & Oksana Buzhdygan - Theoretical Ecology Lab
 
-## Task 2) 
+## Task 2)
 
 ### Step by step
 
-1\) Does data responds linearly? –\> DCA to access gradient length (\< 3 = Linear); In any case I personally prefer to use distance-based methods; The most widely used method in ecology is nowadays an NMDS with post-hoc vector analysis; Since we‘re dealing with abundance data I would suggest using the Bray-Curtis Dissimilarity as distance matrix
+1\) Does data responds linearly? –\> DCA to access gradient length
 
-2\) Constrained or unconstrained methods? In our case we do have predictors, but again, I would prefer using an NMDS and post-hoc vector fitting using either the envit() function or the ordisurf() function
-
-... but first lets see how the data looks like etc.
-
-					
-
-				
-
-			
-
-		
-
-	
+-   in our case SD = 1.5048 = Linear methods are the most powerful way
 
 ## 
