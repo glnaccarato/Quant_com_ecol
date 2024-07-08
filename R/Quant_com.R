@@ -88,7 +88,7 @@
 
 # libraries needed
 library(vegan)
-
+library(ggplot2)
 
 
 ## Preparation -----
@@ -105,8 +105,10 @@ env_dat <- read.csv("data/JenaExp_treatments.csv")
 anyNA(spec_dat) # no NA's
 anyNA(env_dat) # no NA's
 
+# no zero values in species matrix indicates a homogeneous dataset
 
-# Further steps (just notes so far!!!)
+# Heterogenity of species data can be measured by DCA (the length of the 
+# first DCA axis) = measure of heterogeneity;
 
 # 1. Using the first Detrended Component Analysis (DCA) axis to detect,
 #    if species response is rather linear or unimodel along the 
@@ -119,12 +121,11 @@ decorana(spec_dat[,-1]) # 1.5048 = short gradient
 #   - linear (< 3 SD) as well as distance-based methods are suitable, but 
 #     linear methods are more powerful
 
-#   - we have to chose between:
-#       1. Constrained ordination methods:
-#             - Redundancy Analysis (RDA)
-#             - Distance-based Rudundancy Analysis (db-RDA)
 
-# or we choose a non-linear distance-based approach NMDs
+# Decision so far: RDA on Hellinger-standardized species data
+
+# Hellinger standardization
+spec_dat_hell <- decostand(spec_dat[, -1], method = "hellinger")
 
 
 
