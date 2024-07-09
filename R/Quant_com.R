@@ -126,11 +126,13 @@ decorana(spec_dat[,-1]) # 1.5048 = short gradient
 
 # And here the confusion starts because:
 
-# if I understood it correctly we do not need to use a hellinger transformation
-# as our species data already response linear to the environmental gradient
-# even though its abundance data (compare to oksanas final task script)
+# Quote from Oksanas script:
+# "The response variables are species composition matrix with species 
+#  abundances. This means that they usually respond nonlinearly to environmental 
+#  gradients.
 
-# but if we continue like this, that happens:
+# In our case, they still respond linearly, but if we don't use the Hellinger 
+# transformation, that happens: 
 
 # 1. Approach:
 
@@ -146,6 +148,11 @@ screeplot(pca_sp, bstick = TRUE, type = "l",
 # ..and 
 summary(eigenvals(pca_sp)) # our eigenvalues don't make to much sense
 
+# they look fucking weird as well
+ordiplot (pca_sp, scaling = "symmetric") 
+biplot(pca_sp, scaling = "symmetric")
+
+
 # 2. Approach 
 
 # would be to use a hellinger-transformation, but if we do, there is 
@@ -154,6 +161,12 @@ summary(eigenvals(pca_sp)) # our eigenvalues don't make to much sense
 
 # Quote from Oksanas source:
 # https://www.davidzeleny.net/anadat-r/doku.php/en:confusions
+
+# Wrong: you first use DCA to decide whether to use linear or unimodal ordination 
+# methods, and if you decide for linear methods, you Hellinger-transform the data
+# and call it transformation-based ordination.
+
+# (...)
 
 # Use transformation-based ordination method. You do not need to make a decision 
 # between linear or unimodal methods, simply you opt for transformation-based 
@@ -165,7 +178,7 @@ summary(eigenvals(pca_sp)) # our eigenvalues don't make to much sense
 # ordination method (you use linear method applied on Hellinger transformed data).
 
 # so we would than justify our transformation only because we're dealing with
-# abundance data. The output with transformed data makes also more sense
+# abundance data? The output with transformed data makes also more sense
 
 # hellinger transformation
 spec_dat_hell <- decostand(spec_dat[, -1], method = "hellinger")
@@ -187,4 +200,15 @@ summary(eigenvals(pca_sp_hell))
 # PCA1: 0.33690
 # PCA2: 0.24746
 
-# So should we go with Approach 2?
+ordiplot (pca_sp_hell, scaling = "symmetric") 
+biplot(pca_sp_hell, scaling = "symmetric")
+
+# So we go with the second approach?
+
+
+
+
+
+
+
+

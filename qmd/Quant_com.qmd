@@ -62,11 +62,15 @@ In this case, we still have to choose between:
 
 -   Hellinger-Standardization can be used in linear ordination methods as they use the Euclidean Distance, which is sensitive to the double-zero problem (two species are both absent in several sites, which can artificially inflate the similarity between sites --\> absence of a species in different samples is wrongly interpreted as similarity)
 
--   in our dataset no zeros occur --\> Hellinger transformation is not needed fro this reason B**UT**
+-   in our dataset no zeros occur --\> Hellinger transformation is not needed for this reason B**UT**
 
 -   Hellinger transformation converts species abundances from absolute to relative values and then square roots them. This could be useful if we are not interested in changes of absolute species abundances, but relative abundances. E.g. if species A has abundance 30 in sample 1 and 20 in sample 2, and species B has abundance 3 in sample 1 and 2 in sample 2, the absolute change is 10 for species A and 1 for species B, but relative change is the same for both. If this is the purpose of this transformation, then Hellinger transformed data could be used also in other ordination methods, e.g. CA or CCA;
 
 --\> so according to <https://www.davidzeleny.net/anadat-r/doku.php/en:confusions> we should not use the hellinger transformation because we already have a linear response??
+
+but the outcome on untransformed data scares me and I havent seen any analysis
+
+so far that actually performs on untransformed values, also not in Oksanas script
 
 **Decision between constrained and unconstrained methods:**
 
