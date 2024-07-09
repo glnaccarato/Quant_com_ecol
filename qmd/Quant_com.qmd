@@ -66,7 +66,7 @@ In this case, we still have to choose between:
 
 -   Hellinger transformation converts species abundances from absolute to relative values and then square roots them. This could be useful if we are not interested in changes of absolute species abundances, but relative abundances. E.g. if species A has abundance 30 in sample 1 and 20 in sample 2, and species B has abundance 3 in sample 1 and 2 in sample 2, the absolute change is 10 for species A and 1 for species B, but relative change is the same for both. If this is the purpose of this transformation, then Hellinger transformed data could be used also in other ordination methods, e.g. CA or CCA;
 
- Helllinger Transformation should be applied!
+--\> so according to <https://www.davidzeleny.net/anadat-r/doku.php/en:confusions> we should not use the hellinger transformation because we already have a linear response??
 
 **Decision between constrained and unconstrained methods:**
 
@@ -74,7 +74,9 @@ In this case, we still have to choose between:
 
 -   An unconstrained ordination is useful for viewing overall patterns in the data, but constrained ordinations allow you to test hypotheses and discover trends that were hidden in the unconstrained ordination (i.e. masked by high variability and high correlation structure).
 
---\> still not sure which ones is the better choice !!
+--\> still not sure which ones is the better choice (they are both very similar)
+
+--\> but from the way she formulated the task, I would suggest to calculate a PCA first and than proceed with post-hoc vector fitting as she states it. However, I have also read in some articles that you can combine these to methods as well..
 
 **Transformation of environmental data:**
 

@@ -95,6 +95,9 @@ library(ggplot2)
 
 # Import data
 
+# set working directory (only for my personal usage)
+setwd("/Users/gianlucanaccarato/Documents/Dokumente/GitHub/Quant_com_ecol")
+
 # species data
 spec_dat <- read.csv("data/JenaExp_arthropod_taxa.csv")
 
@@ -111,8 +114,8 @@ anyNA(env_dat) # no NA's
 # first DCA axis) = measure of heterogeneity;
 
 # 1. Using the first Detrended Component Analysis (DCA) axis to detect,
-#    if species response is rather linear or unimodel along the 
-#    enivironmental gradient 
+#    if species response is rather linear or unimodal along the 
+#    environmental gradient 
 
 # perform DCA to check for first axis length
 decorana(spec_dat[,-1]) # 1.5048 = short gradient 
@@ -121,21 +124,67 @@ decorana(spec_dat[,-1]) # 1.5048 = short gradient
 #   - linear (< 3 SD) as well as distance-based methods are suitable, but 
 #     linear methods are more powerful
 
+# And here the confusion starts because:
 
-# Decision so far: RDA on Hellinger-standardized species data
+# if I understood it correctly we do not need to use a hellinger transformation
+# as our species data already response linear to the environmental gradient
+# even though its abundance data (compare to oksanas final task script)
 
-# Hellinger standardization
+# but if we continue like this, that happens:
+
+# 1. Approach:
+
+# perform PCA on untransformed abundance data
+pca_sp <- rda(spec_dat[,-1], 
+              scale = FALSE) # species data does not need scaling
+
+pca_sp
+
+screeplot(pca_sp, bstick = TRUE, type = "l",
+          main = NULL) # only PCA1 lay above the line!
+
+# ..and 
+summary(eigenvals(pca_sp)) # our eigenvalues don't make to much sense
+
+# 2. Approach 
+
+# would be to use a hellinger-transformation, but if we do, there is 
+# no point in performing a DCA at the beginning, because we are using a 
+# linear method on transformed data 
+
+# Quote from Oksanas source:
+# https://www.davidzeleny.net/anadat-r/doku.php/en:confusions
+
+# Use transformation-based ordination method. You do not need to make a decision 
+# between linear or unimodal methods, simply you opt for transformation-based 
+# method. Transform the species composition data by Hellinger transformation 
+# (there are also other transformations, but this is the most often used), 
+# and analyse data either by unconstrained (tb-PCA) or constrained (tb-RDA) 
+# approach, depending on your purpose. No DCA is done before, it is not 
+# necessary, since you are not making decision between linear or unimodal 
+# ordination method (you use linear method applied on Hellinger transformed data).
+
+# so we would than justify our transformation only because we're dealing with
+# abundance data. The output with transformed data makes also more sense
+
+# hellinger transformation
 spec_dat_hell <- decostand(spec_dat[, -1], method = "hellinger")
 
+# PCA
+pca_sp_hell <- rda(spec_dat_hell, 
+              scale = FALSE) # no scaling needed, species data
 
+pca_sp_hell
 
+# check relevance of ordination axis
+screeplot(pca_sp_hell, bstick = TRUE, type = "l",
+          main = NULL) # now PCA1, PCA2, and PCA3 lay above the line 
 
+# eigenvalues of axis now make more sense 
+summary(eigenvals(pca_sp_hell))
 
+# Explained proportions of the axis (should be included in the final plot)
+# PCA1: 0.33690
+# PCA2: 0.24746
 
-
-
-
-
-
-
-
+# So should we go with Approach 2?
