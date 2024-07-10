@@ -91,7 +91,7 @@ screeplot(pca_sp_trans, bstick = TRUE, type = "l",
 
 summary(eigenvals(pca_sp_trans)) # Eigenvalues: PC1 = 0.020736, PC2 = 0.017359, Cumulative Proportion of PC1 + PC2 = 0.61758 (Coleoptera_rest & Carabidae)
 
-# !!! Coleptera and Carabidae are PC1 and PC2 !!!
+# !!! Coleptera and Carabidae are main contributors in PC1 and PC2 !!!
 ordiplot (pca_sp_trans, scaling = "symmetric") 
 biplot(pca_sp_trans, scaling = "symmetric")
 
@@ -105,7 +105,7 @@ pca_sp_new <- rda(taxa_new_hell[,-1])
 pca_sp_new
 
 screeplot(pca_sp_new, bstick = TRUE, type = "l",
-          main = NULL) # PC1-3 above the line
+          main = NULL) # PC1-2 above the line
 
 summary(eigenvals(pca_sp_new)) # Eigenvalues: PC1 = 0.019178, PC2 = 0.010799, Cumulative Proportion of PC1 + PC2 = 0.6790 (Coleoptera & Isopoda?)
 
