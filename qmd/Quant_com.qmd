@@ -40,47 +40,17 @@ bibliography: Quant_Com_Group.bib
 
 ## Task 2)
 
-### Step by step
+#### Data analysis
 
-1\) Does data responds linearly? –\> DCA to access gradient length
+To extract the main gradients of anthropod composition, we performed a principal component analysis (PCA) on the Hellinger-transformed species matrix (Legendre & Gallagher 2001). The data transformation was applied due to high differences in the abundances of the individual taxa. By subsequently taking the square root of the relative species abundances, the importance of dominant species groups is reduced (Borcardet al. 2011).
 
--   in our case SD = 1.5048 = Linear methods are the most powerful way
+Subsequently we fitted vectors onto the plot ... following the approach of Legendre & Gallagher (2001).
 
-In this case, we still have to choose between:
+## Results
 
-1\. Constrained ordination method:
+The PCA projection revealed important changes in arthropod composition along the plant diversity gradient. Axes 1 and 2 represented 58.44% of the variance of the Hellinger-transformed species matrix.
 
--   Redundancy Analysis (RDA)
-
-2\. Unconstrained ordination methods:
-
--   Principle Component Analysis (PCA) +post hoc testing of predictor effects using envit() function
-
-#### According to: Chapter 6 from: Borcard, D., Gillet, F. and Legendre, P. 2011. Numerical Ecology with R. Springer.
-
-**Short thought on possible usage of Transformation (Hellinger-Standardization):**
-
--   Hellinger-Standardization can be used in linear ordination methods as they use the Euclidean Distance, which is sensitive to the double-zero problem (two species are both absent in several sites, which can artificially inflate the similarity between sites --\> absence of a species in different samples is wrongly interpreted as similarity)
-
--   in our dataset no zeros occur --\> Hellinger transformation is not needed for this reason B**UT**
-
--   Hellinger transformation converts species abundances from absolute to relative values and then square roots them. This could be useful if we are not interested in changes of absolute species abundances, but relative abundances. E.g. if species A has abundance 30 in sample 1 and 20 in sample 2, and species B has abundance 3 in sample 1 and 2 in sample 2, the absolute change is 10 for species A and 1 for species B, but relative change is the same for both. If this is the purpose of this transformation, then Hellinger transformed data could be used also in other ordination methods, e.g. CA or CCA;
-
---\> so according to <https://www.davidzeleny.net/anadat-r/doku.php/en:confusions> we should not use the hellinger transformation because we already have a linear response??
-
-but the outcome on untransformed data scares me and I havent seen any analysis
-
-so far that actually performs on untransformed values, also not in Oksanas script
-
-**Decision between constrained and unconstrained methods:**
-
--   Constrained ordinations use an a prior hypothesis to produce the ordination plot (i.e. they relate a matrix of response variables to explanatory variables). They only display the variation in the data of the explanatory variables (versus unconstrained which display all the variation in the data).
-
--   An unconstrained ordination is useful for viewing overall patterns in the data, but constrained ordinations allow you to test hypotheses and discover trends that were hidden in the unconstrained ordination (i.e. masked by high variability and high correlation structure).
-
---\> still not sure which ones is the better choice (they are both very similar)
-
---\> but from the way she formulated the task, I would suggest to calculate a PCA first and than proceed with post-hoc vector fitting as she states it. However, I have also read in some articles that you can combine these to methods as well..
+-   using envit() function
 
 **Transformation of environmental data:**
 
@@ -93,3 +63,5 @@ so far that actually performs on untransformed values, also not in Oksanas scrip
 Here is a paper from the Jena Experiment dealing with anthropodes and plant diversity:
 
 <https://doi.org/10.1016/j.baae.2017.09.014>
+
+\@

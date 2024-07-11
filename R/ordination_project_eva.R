@@ -10,8 +10,8 @@ library(vegan)
 
 
 # Datasets ----
-taxa_dat <- read_csv("../data/JenaExp_arthropod_taxa.csv")
-treatments <- read_csv("../data/JenaExp_treatments.csv")
+taxa_dat <- read_csv("data/JenaExp_arthropod_taxa.csv")
+treatments <- read_csv("data/JenaExp_treatments.csv")
 
 
 # Data Exploration ----
