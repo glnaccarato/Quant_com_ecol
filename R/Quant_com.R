@@ -6,7 +6,8 @@
 library(tidyverse)
 library(vegan)
 library(ggplot2)
-library("viridis")  # only for color palette
+library(viridis)  # only for color palette
+library(ggrepel)
 
 # set working directory (only for my personal usage)
 setwd("/Users/gianlucanaccarato/Documents/Dokumente/GitHub/Quant_com_ecol")
@@ -55,6 +56,9 @@ boxplot(spec_dat_hell,
         las = 2,
         main = "Abundance") # better
 
+par(mfrow = c(1,1))
+
+
 ### Computation of Principal Component Analaysis -------------------------------
 
 # double check gradient length of first DCA axis (only optional)
@@ -99,20 +103,22 @@ site.scrs
 # Plot 1: PCA ordination plot of sites/ plots
 # with plots colored by plant species richness
 ggplot(site.scrs)+
+  geom_hline(yintercept = 0, color="grey", lty =1) +
+  geom_vline(xintercept = 0, color="grey", lty =1) +
   geom_point(aes(PC1, PC2, color = factor(Plant_SR)), size = 3, alpha = 0.9)+
-  scale_color_viridis(option = "A", # color pallet with different options
+  # stat_ellipse(aes(x=PC1,y=PC2,fill=factor(Plant_SR)),
+  #              geom="polygon", level=0.95, alpha=0.2)+
+  scale_color_viridis(option = "C", # color pallet with different options
                       discrete = TRUE)+ 
   scale_fill_viridis(discrete = TRUE) +
-  geom_hline(yintercept = 0, color="black", lty =1) +
-  geom_vline(xintercept = 0, color="black", lty =1) +
   theme_bw()+
   labs(
     x = "PC1 (33.69 %)",
     y = "PC2 (24.74 %) ",
     title = "PCA on Arthropod Composition along a Plant Species Richness Gradient",
     subtitle = "Performed on the Hellinger-transformed species matrix")+
-  guides(color = guide_legend(title = "No. of Plant Species")) # manual legend
-
+  guides(color = guide_legend(title = "No. of Plant Species")) + # manual legend
+  guides(color=guide_legend("Plant_SR"), fill = "none") # remove factorized legend 
 
 # Plot 2: PCA ordination plot of species
 # with plots colored by plant species richness
@@ -138,7 +144,7 @@ ggplot(species.scrs)+
                arrow = arrow(length = unit(0.2, "cm")), color = "#CD0000")+
   geom_point(data = site.scrs, aes(PC1, PC2, color = factor(Plant_SR)), 
              size = 3, alpha = 0.5)+
-  scale_color_viridis(option = "A", # color pallet with different options
+  scale_color_viridis(option = "C", # color pallet with different options
                       discrete = TRUE)+ 
   scale_fill_viridis(discrete = TRUE) +
   geom_hline(yintercept = 0, color="grey", lty =1) +
@@ -212,3 +218,148 @@ ggplot(site.scrs)+
   guides(color = guide_legend(title = "No. of Plant Species"))+
   geom_text_repel(data = env.scrs_sig, aes(PC1, PC2, label = Env.variables), 
                   color = "#008B45", size = 3)
+
+
+### Data visualization --------------------------------------------------------- 
+
+
+# I was also thinking of visualizing the arthropod composition along
+# the plant species gradient via a stacked bar plot or a bubble plot
+
+# we need relative abundances as sampling design was unbalanced
+# absolute abundances are not comparable e.g. plots with 60 species
+# only got sampled 4 times -> overall lower absolute abundances
+
+# add column of plant species richness and bring into long format,
+# turn absolute into relative abundances, and calculate mean values
+spec_dat_rel <- as_tibble(
+  spec_dat[, -1] / rowSums(spec_dat[, -1])) %>% # calculate rel. abundances
+  mutate(Plant_SR = as.factor(env_dat$Plant_SR)) %>% # add factorized Plat_SR
+  pivot_longer(cols = 1:11, # bring taxa columnns into wider format
+               names_to = "Taxa",
+               values_to = "Abundances") %>% 
+  group_by(Taxa, Plant_SR) %>% 
+  summarise(tot_rel_abundance = mean(Abundances))
+
+view(spec_dat_rel)
+
+# percent stacked barplot
+ggplot(spec_dat_rel,
+       aes(x=Plant_SR, y=tot_rel_abundance, fill = Taxa))+
+  geom_bar(stat = "identity",
+           position = "fill") + # create percent stacked barchart
+  scale_fill_viridis(
+    option = "C",
+    discrete = T)+
+  theme(panel.background = element_blank(), 
+                panel.border = element_rect(colour = "black", 
+                                            fill = NA, size = 0.5), 
+                legend.position = "right")+
+  labs(x = "Plant Species Richness",
+       y = "Mean Relative Abundance")
+
+# bubble plot
+ggplot(spec_dat_rel, aes(x=Plant_SR, y=Taxa))+
+  geom_point(aes(color=Taxa, size = tot_rel_abundance))+
+  scale_size_continuous(range = c(0.01, 15))+ # Adjust the range of points size
+  scale_color_viridis(option = "C", discrete = T, alpha = 0.7) +
+  labs(x= "Plant Species Richness",
+       y = "Taxonomic Arthtropod Groups",
+       size = "Relative Mean Abundance (%)", 
+       fill = "")+
+  theme(panel.background = element_blank(), 
+        panel.border = element_rect(colour = "black", fill = NA, size = 0.5), 
+        legend.position = "right")+
+  guides(color = F, 
+         size = F) # removes irreleavnt legend
+
+
+
+
+
+
+
+### Different approach using a NMDS instead ------------------------------------
+
+# Run NMDS
+
+set.seed(2) # set seed to obtain similar results each time
+nmds1 <- metaMDS(spec_dat[, -1], distance = "bray", k = 2,
+                 autotransform = F, trymax = 20)
+
+# check stress
+nmds1$stress # 0.1649247 (< 0.1 – excellent; < 0.2 – good --> could be better)
+
+# checking the influence of dimensionality 
+set.seed(2)
+nmds2 <- metaMDS(spec_dat[, -1], distance = "bray", k = 3,
+                 autotransform = F, trymax = 20)
+nmds3 <- metaMDS(spec_dat[, -1], distance = "bray", k = 4,
+                 autotransform = F, trymax = 20)
+nmds4 <- metaMDS(spec_dat[, -1], distance = "bray", k = 5,
+                 autotransform = F, trymax = 20)
+nmds5 <- metaMDS(spec_dat[, -1], distance = "bray", k = 6,
+                 autotransform = F, trymax = 20)
+
+# Saving stress values 
+stress_df <- tibble(k = 2:6,
+                    stress = c(nmds1$stress, nmds2$stress, nmds3$stress, 
+                               nmds4$stress, nmds5$stress))
+
+# plot stress against k
+ggplot(stress_df, aes(k, stress))+ geom_point()+
+  geom_line(lty = 1)+
+  theme_bw()
+
+# 3 dimensions seem to have a workable level of stress
+
+nmds2$stress # 0.1012874 
+
+# Asses appropriateness of NMDS ordination
+stressplot(nmds2, main = "Shepard plot") # high linear fit (0.94)
+
+# which sample units contribute to the overall variation?
+gof = goodness(object = nmds2)
+plot(nmds2, display = "sites", type = "none")
+points(nmds2, display = "sites", cex = 2*gof/mean(gof))
+# sample units shown with larger circles account for more of the 
+# variation in the overall fit of the data 
+
+
+# Plot results
+# extract species scores
+species.scrs <- scores(nmds2, display=c("sp")) %>% 
+  as_tibble(rownames = "species_name") 
+species.scrs
+
+# extract site scores
+site.scrs <- scores(nmds2, display = c("sites")) %>% 
+  as_tibble(rownames = "sites")
+site.scrs
+
+# add plot_code to site.scrs table
+
+# add site column from environmental data to PCA site scores
+site.scrs <- cbind(site.scrs, Plant_SR = env_dat$Plant_SR)
+site.scrs
+
+# Plot 1: PCA ordination plot of sites/ plots
+# with plots colored by plant species richness
+ggplot(site.scrs)+
+  geom_hline(yintercept = 0, color="grey", lty =1) +
+  geom_vline(xintercept = 0, color="grey", lty =1) +
+  geom_point(aes(NMDS1, NMDS2, color = factor(Plant_SR)), size = 3, alpha = 0.9)+
+  stat_ellipse(aes(x=NMDS1,y=NMDS2,fill=factor(Plant_SR)),
+               geom="polygon", level=0.95, alpha=0.2)+
+  scale_color_viridis(option = "C", # color pallet with different options
+                      discrete = TRUE)+ 
+  scale_fill_viridis(discrete = TRUE) +
+  theme_bw()+
+  labs(x = "NMDS1",
+       y = "NMDS2",
+       title = "NMDS on Arthropod Composition along a Plant Species Richness Gradient",
+       subtitle = "Performed on Bray-Curtis Dissimilarity Matrix; Stress = 0.1012874")+
+  guides(color = guide_legend(title = "No. of Plant Species")) + # manual legend
+  guides(color=guide_legend("Plant_SR"), fill = "none") # remove factorized legend 
+
+# similar shitty results :/

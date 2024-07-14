@@ -40,7 +40,7 @@ bibliography: Quant_Com_Group.bib
 
 ## Introduction
 
-## Methodology 
+## Methodology
 
 ### Collection of data and experimental design
 
@@ -52,25 +52,17 @@ To extract the main gradients of arthropod composition, we performed a principal
 
 *I don't know if we want to include the following information, as it seems to be irrelevant, but I Oksana also did this step in her scripts. Plus I still think its necessary because otherwise we wouldn't know wether linear methods are applicable. Anyway, lmk what you guys think.*
 
--------
+------------------------------------------------------------------------
 
 The assesment of gradient length by observing the first axis (0.875) of the Detrended correspondence analysis (DCA) applied to the transformed data confirmed that the species composition responds linearly to the sampled gradients (Leps & Smilauer XXX).
 
--------
+------------------------------------------------------------------------
 
 Afterwards, environmental data was fitted onto the ordination to portray the correlation of the variables with the arthropod composition following the approach of Legendre & Gallagher (2001). Therefore, all variables were included in the envfitfunction from the vegan package (Oksanen et al., 2015), which used a Monte-Carlo-Test with 1000 permutations to evaluate the significance of each variable. Only variables with a significant *p*-value \< 0.05 were included in the presented figure.
 
 ## Results
 
 The PCA projection revealed important changes in arthropod composition along the plant diversity gradient. Axes 1 and 2 represented 58.44% of the variance of the Hellinger-transformed species matrix.
-
--   using envit() function
-
-**Transformation of environmental data:**
-
--   we have presence absence data (functional plant groups)
-
--   and we have species diversity data (2,4,8,16) of sawn species, do weed need to transform them into categories (1,2,3,4,5)?
 
 ## Further Notes:
 
