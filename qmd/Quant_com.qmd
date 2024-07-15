@@ -54,11 +54,11 @@ To extract the main gradients of arthropod composition, we performed a principal
 
 ------------------------------------------------------------------------
 
-The assesment of gradient length by observing the first axis (0.875) of the Detrended correspondence analysis (DCA) applied to the transformed data confirmed that the species composition responds linearly to the sampled gradients (Leps & Smilauer XXX).
+The assessment of gradient length by observing the first axis (0.875) of the Detrended correspondence analysis (DCA) applied to the transformed data confirmed that the species composition responds linearly to the sampled gradients (Leps & Smilauer XXX).
 
-------------------------------------------------------------------------
+Afterwards, environmental data was fitted onto the ordination to portray the correlation of the variables with the arthropod composition following the approach of Legendre & Gallagher (2001). Therefore, all variables were included in the envfit-function from the vegan package (Oksanen et al., 2015), which used a Monte-Carlo-Test with 1000 permutations to evaluate the significance of each variable. Only variables with a significant *p*-value \< 0.05 were included in the presented figure.
 
-Afterwards, environmental data was fitted onto the ordination to portray the correlation of the variables with the arthropod composition following the approach of Legendre & Gallagher (2001). Therefore, all variables were included in the envfitfunction from the vegan package (Oksanen et al., 2015), which used a Monte-Carlo-Test with 1000 permutations to evaluate the significance of each variable. Only variables with a significant *p*-value \< 0.05 were included in the presented figure.
+Prior to analysis, all environmental variables were examined for inter-correlations to avoid multicollinearity. This was done using the pairs.panels function from the psych package, which calculates the Pearson correlation coefficient for each combination of variables in the dataset (cite psych-package).
 
 ## Results
 
