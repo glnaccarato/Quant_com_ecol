@@ -44,7 +44,7 @@ bibliography: Quant_Com_Group.bib
 
 ### Collection of data and experimental design
 
-Sample collection was conducted as part of the *Jena Experiment*, located in the city of Jena, Germany. In total, 80 experimental plots measuring 20 x 20 m were manipulated with 60 plant species (native to Central Europe mesophilic grasland) to establish a gradient in plant species richness (1 (n = 14), 2 (n = 16), 4 (n = 16), 8 (n = 16), 16 (n = 14), and 60 (n = 4)) and functional group richness (grasses, small herbs, tall herbs, legumes). In 2010, arthropod communities were sampled within each plot, based on abundance counts of individuals, which were subsequently classified into the following taxonomic groups according to Ebeling et al. (2017): Araneae, Carabidae, Chilopoda, Cicadina, Coleoptera_rest, Diplopoda, Heteroptera, Isopoda, Opiliones, Orthoptera, Staphylinidae.
+Sample collection was conducted as part of the *Jena Experiment*, located in the city of Jena, Germany. In total, 80 experimental plots measuring 20 x 20 m were manipulated with 60 plant species (native to Central Europe mesophilic grasland) to establish a gradient in plant species richness (1 (n = 14), 2 (n = 16), 4 (n = 16), 8 (n = 16), 16 (n = 14), and 60 (n = 4)) and functional group richness (grasses, small herbs, tall herbs, legumes). In 2010, arthropod communities were sampled within each plot, based on abundance counts of individuals, which were subsequently classified into the following taxonomic groups according to Ebeling et al. (2017): Araneae, Carabidae, Chilopoda, Cicadina, Coleoptera (rest), Diplopoda, Heteroptera, Isopoda, Opiliones, Orthoptera, Staphylinidae.
 
 ### Data analysis
 
