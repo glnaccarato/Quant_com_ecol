@@ -261,6 +261,7 @@ densityplot(perm_stat_taxa)
 #  is not recommended because it does not take into account the categorical nature of the data. In such cases, 
 #  other measures like Kendall's tau or Cramer's V may be more appropriate for assessing the association between
 #  categorical variables."
+          # OK so there are people who say correlation in these terms does not apply to binary data, I am still looking into it, we might need to use another method.
 corr <- cor(env_dat[-1], method = "kendall")
 corr
 #              Plant_SR     Grasses Short.Herbs  Tall.Herbs     Legumes
