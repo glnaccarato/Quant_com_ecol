@@ -50,19 +50,30 @@ Sample collection was conducted as part of the *Jena Experiment*, located in the
 
 To extract the main gradients of arthropod composition, we performed a principal component analysis (PCA) on the Hellinger-transformed species matrix (Legendre & Gallagher 2001). The Hellinger-transformation was applied due to high differences in the abundances of the individual taxa. By taking the square root of the relative species abundances, the importance of dominant species gets thereby reduced (Borcardet al. 2011).
 
-*I don't know if we want to include the following information, as it seems to be irrelevant, but I Oksana also did this step in her scripts. Plus I still think its necessary because otherwise we wouldn't know wether linear methods are applicable. Anyway, lmk what you guys think.*
+*I don't know if we want to include the following information, as it seems to be irrelevant, but I Oksana also did this step in her scripts. Plus I still think its necessary because otherwise we wouldn't know whether linear methods are applicable. Anyway, lmk what you guys think.*
 
 ------------------------------------------------------------------------
 
 The assessment of gradient length by observing the first axis (0.875) of the Detrended correspondence analysis (DCA) applied to the transformed data confirmed that the species composition responds linearly to the sampled gradients (Leps & Smilauer XXX).
 
+Since there is no optimal method to display sites and species variables together in a PCA biplot, two different types of scaling have been applied for graphical representation (Borcard et al. 2011). For the display of the plots, i.e., the species, the respective scores are scaled by eigenvalues, while the other set of scores remains unscaled (Oksanen 2024).
+
 Afterwards, environmental data was fitted onto the ordination to portray the correlation of the variables with the arthropod composition following the approach of Legendre & Gallagher (2001). Therefore, all variables were included in the envfit-function from the vegan package (Oksanen et al., 2015), which used a Monte-Carlo-Test with 1000 permutations to evaluate the significance of each variable. Only variables with a significant *p*-value \< 0.05 were included in the presented figure.
 
-Prior to analysis, all environmental variables were examined for inter-correlations to avoid multicollinearity. This was done using the pairs.panels function from the psych package, which calculates the Pearson correlation coefficient for each combination of variables in the dataset (cite psych-package).
+Prior to analysis, all environmental variables were examined for inter-correlations to avoid multicolinearity. This was done using the pairs panels function from the psych package, which calculates the Pearson correlation coefficient for each combination of variables in the dataset (cite psych-package).
 
 ## Results
 
 The PCA projection revealed important changes in arthropod composition along the plant diversity gradient. Axes 1 and 2 represented 58.44% of the variance of the Hellinger-transformed species matrix.
+
+**Relevant figures:**
+
+**Figure 1.** Principal component analysis of the Hellinger-transformed species composition: **sample plots** (eigenvectors are scaled to unit length)
+
+**Figure 2.** Principal component analysis of the Hellinger-transformed species composition: **species** (each eigenvector is scaled to the square root of
+its eigenvalue)
+
+**Figure 3.** Principal component analysis of the Hellinger-transformed species composition: **fitted significant variables**.
 
 ## Further Notes:
 
