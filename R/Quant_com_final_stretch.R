@@ -238,8 +238,6 @@ summary(perm_stat_taxa)
 
 densityplot(perm_stat_taxa)
 
- main
-
 # # Plotting correlation matrix among vegetation types and plant_sr
 # 
 # # Zitat from https://www.quora.com/Can-Spearmans-be-used-for-both-binary-and-categorical-data:
@@ -369,7 +367,3 @@ for (i in 1:(length(binary_vars)-1)) {
 # the binary variables, the binary variables themselves are mostly weakly associated with each other.
 
 
-
-
-
- main
