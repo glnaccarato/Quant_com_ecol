@@ -10,6 +10,11 @@ library(viridis)  # only for color palette
 library(ggrepel)
 library(psych) # for (visual) inspection of multicollinearity
 library(ggcorrplot)
+# library(DescTools) # for Cochran-Armitage Trend test (trends between ordinal and binary variables)
+# library(MASS) # for ordinal logistic regression (to model relationship between an ordinal dependent variable and independent variables)
+# library(vcdExtra) # Goodman and Kruskal's Gamma (assessment of strength of association between ordinal and binary variables)
+
+
 
 # set working directory
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # to automatically set working directory to source file location
@@ -184,92 +189,184 @@ ggsave("bp_stacked.png", width = 15, height = 15, units = "cm")
 
 # Post-hoc - PERMANOVA ---------------------------------------------------------
 
-# calculation of different distance measures using transformed data, in order for comparisons to be "fairer"
-dis_euc_taxa<-vegdist(dis_bc_taxa,"euclidean")
+# Testing homogeneity of multivariate dispersion to decide whether raw or transformed data is preferable
+#  with raw data
+distance_matrix_raw <- vegdist(spec_dat[-1], method = "bray")
+dispersion_raw <- betadisper(distance_matrix_raw, as.factor(env_dat$Plant_SR))
+anova(dispersion_raw)
+# p < 0.05, indicating significant heterogeneity
+
+#  with Hellinger-transformed data
+distance_matrix_hell <- vegdist(spec_dat_hell, method = "bray")
+dispersion_hell <- betadisper(distance_matrix_hell, as.factor(env_dat$Plant_SR))
+anova(dispersion_hell)
+# p > 0.08 (marginally), indicating some heterogeneity in dispersion
+# moving on with transformed data
+
+# Calculation of Bray-Curtis dissimilarity
 dis_bc_taxa<-vegdist(spec_dat_hell,"bray")
-dis_jacc_taxa<-vegdist(dis_bc_taxa,"jaccard", binary=T)
-dis_chi_taxa<-vegdist(dis_bc_taxa,"chisq")
 
 # Distance vector of plot species richness differences
 dis_plant_sr<-dist(env_dat$Plant_SR, 'euclidean')
 
 # Relationship between distance in species space and environmental distance
-par(mfrow=c(2,2))
-plot(dis_euc_taxa,dis_plant_sr,main="Euclidean vs. Plant_SR")
 plot(dis_bc_taxa,dis_plant_sr, main="Bray-Curtis vs. Plant_SR")
-plot(dis_jacc_taxa,dis_plant_sr, main="Jaccard vs. Plant_SR")
-plot(dis_chi_taxa,dis_plant_sr,main="Chi-Square vs. Plant_SR")
 
 ## Pearson correlation between distances
-cor(dis_euc_taxa,dis_plant_sr)
-# -0.02200944 --> very weak negative correlation, taxa composition not linearly related to changes in plant species richness
-
 cor(dis_bc_taxa,dis_plant_sr)
 # -0.02638225 --> very weak negative correlation, taxa composition not linearly related to changes in plant species richness
 
-cor(dis_jacc_taxa,dis_plant_sr)
-# -0.1120482 --> weak negative correlation, inversely proportionate, areas with higher plant species richness have less dissimilarity in plant species presence-absence
-
-cor(dis_chi_taxa,dis_plant_sr)
-# -0.03364025 --> very weak negative correlation, taxa composition not linearly related to changes in plant species richness
-
-# NOTE: altogether, the weak correlations indicate little to no linear relationship between dissimilarity of taxa and variation in Plant_SR
-# this in itself indicates the need for attempting to use non-linear methods to assess this relationship
-
+# Altogether, the weak correlations indicate little to no linear relationship between dissimilarity of taxa and variation in Plant_SR
+# This pionts to the need for attempting to use non-linear methods to assess this relationship
 
 # Perform PERMANOVA to test how significant the effect of each treatment is
-# use of bray-curtis simply because it is generally well suited for abundance data, use of jaccard proved fruitless
 set.seed(1)
 permanova_result <- adonis2(dis_bc_taxa ~ Plant_SR + Grasses + Short.Herbs + Tall.Herbs + Legumes, data = env_dat, permutations = 999)
 
 # Print the results
 print(permanova_result)
-#             Df SumOfSqs      R2       F Pr(>F)    
-# Plant_SR     1  0.06867 0.05340  5.4448  0.001 ***  # 5.34 % of the variation explained by Plant_SR, however the relationship is statistically significant (p < 0.01)
-# Grasses      1  0.12997 0.10107 10.3059  0.001 ***  # 10 % of the variation attributed to the presence or absence of grasses (highest), relationship significant
-# Short.Herbs  1  0.05938 0.04618  4.7086  0.001 ***  # 4.6 % of variation attributed to short herbs, relationship significant
-# Tall.Herbs   1  0.03213 0.02498  2.5473  0.022 *    # 2.5 % of variation, relationship significant
-# Legumes      1  0.06260 0.04868  4.9642  0.002 ***  # 4.9 % ofvariation, relationship significant
-# Residual    74  0.93323 0.72570                     # 73 % of the data variation is derived from factors that are not our vegetation types.
-# Total       79  1.28598 1.00000                     #
-
-# PUT TABLE IN REPORT
-# ENVFIT FOR THE VECTORS AND POST-HOC WITH PERMANOVA
+# All environmental factors significant (p < 0.05), with grasses accounting for the highest percentage of variance explained (10,3 %)
+# more than 73 % of variance not explained by our model, indicating unaccounted variables
 
 set.seed(1)
 perm_stat_taxa <- permustats(permanova_result)
 summary(perm_stat_taxa)
-#             statistic     SES    mean lower  median   upper Pr(perm)    
-# Plant_SR       5.4448  7.5222  0.9949        0.8819  2.1034    0.001 ***
-# Grasses       10.3059 15.7386  0.9870        0.8825  2.1406    0.001 ***
-# Short.Herbs    4.7086  5.9830  1.0168        0.9144  2.2320    0.001 ***
-# Tall.Herbs     2.5473  2.6166  0.9911        0.8792  2.0707    0.022 *  
-# Legumes        4.9642  5.7796  1.0331        0.8868  2.3755    0.002 ** 
+#             statistic     SES    mean median   upper Pr(perm)    
+# Plant_SR       5.4448  7.5222  0.9949 0.8819  2.1034    0.001 ***
+# Grasses       10.3059 15.7386  0.9870 0.8825  2.1406    0.001 ***
+# --> extremely low chance that the variance attributed to these variables is due to chance
 
 densityplot(perm_stat_taxa)
 
-# MUST ADD INTERPRETATION OF DENSITY PLOTS FOR ALL!!! ---------------------
 
-# Plotting correlation matrix among vegetation types and plant_sr
+# # Plotting correlation matrix among vegetation types and plant_sr
+# 
+# # Zitat from https://www.quora.com/Can-Spearmans-be-used-for-both-binary-and-categorical-data:
+# # "For binary data, Spearman's rank correlation coefficient may not be the most appropriate measure
+# #  because binary data are categorical and do not have a natural ordering. In such cases, other measures
+# #  like the Point-Biserial correlation coefficient or the Phi coefficient may be more suitable for assessing
+# #  the relationship between two binary variables.
+# #  For categorical data with more than two categories, the use of Spearman's rank correlation coefficient 
+# #  is not recommended because it does not take into account the categorical nature of the data. In such cases, 
+# #  other measures like Kendall's tau or Cramer's V may be more appropriate for assessing the association between
+# #  categorical variables."
+# corr <- cor(env_dat[-1], method = "kendall")
+# corr
+# 
+# ggcorrplot(corr, hc.order = TRUE, lab = TRUE)
+# # highest correlations observed between Plant_SR and Grasses (0.35), Tall.Herbs (0.32), Short.Herbs (0.32) and Legumes (0.29)
+# # none of them are high
 
-# Zitat from https://www.quora.com/Can-Spearmans-be-used-for-both-binary-and-categorical-data):
-# "For binary data, Spearman's rank correlation coefficient may not be the most appropriate measure
-#  because binary data are categorical and do not have a natural ordering. In such cases, other measures
-#  like the Point-Biserial correlation coefficient or the Phi coefficient may be more suitable for assessing
-#  the relationship between two binary variables.
-#  For categorical data with more than two categories, the use of Spearman's rank correlation coefficient 
-#  is not recommended because it does not take into account the categorical nature of the data. In such cases, 
-#  other measures like Kendall's tau or Cramer's V may be more appropriate for assessing the association between
-#  categorical variables."
-corr <- cor(env_dat[-1], method = "kendall")
-corr
-#              Plant_SR     Grasses Short.Herbs  Tall.Herbs     Legumes
-# Plant_SR    1.0000000  0.34828653  0.31933356  0.31660786  0.28745902
-# Grasses     0.3482865  1.00000000  0.22215277  0.16881931 -0.05593966
-# Short.Herbs 0.3193336  0.22215277  1.00000000 -0.05534631  0.22215277
-# Tall.Herbs  0.3166079  0.16881931 -0.05534631  1.00000000  0.16881931
-# Legumes     0.2874590 -0.05593966  0.22215277  0.16881931  1.00000000
 
-ggcorrplot(corr, hc.order = TRUE, lab = TRUE)
-# highest correlations observed between Plant_SR and Grasses (0.35), Tall.Herbs (0.32), Short.Herbs (0.32) and Legumes (0.29)
-# none of them are high
+# # Cochran-Armitage Trend Test
+# for (var in c("Grasses", "Short.Herbs", "Tall.Herbs", "Legumes")) {
+#   trend_test <- CochranArmitageTest(table(env_dat$Plant_SR, env_dat[[var]]))
+#   print(paste("Cochran-Armitage Trend Test for", var))
+#   print(trend_test)
+# }
+# 
+# 
+# # Ordinal Logistic Regression
+# model <- polr(as.factor(Plant_SR) ~ + Grasses + Short.Herbs + Tall.Herbs + Legumes, data = env_dat, Hess = TRUE)
+# summary(model)
+# 
+# 
+# # Goodman and Kruskal's Gamma
+# for (var in c("Grasses", "Short.Herbs", "Tall.Herbs", "Legumes")) {
+#   gamma <- GKgamma(table(env_dat$Plant_SR, env_dat[[var]]))
+#   print(paste("Goodman and Kruskal's Gamma for", var))
+#   print(gamma)
+# }
+
+
+
+# Chi-Square Test with Monte Carlo Simulation (make approximation more robust)
+for (var in c("Grasses", "Short.Herbs", "Tall.Herbs", "Legumes")) {
+  table <- table(env_dat$Plant_SR, env_dat[[var]])
+  chisq_test <- chisq.test(table, simulate.p.value = TRUE, B = 2000)  # B is the number of simulations
+  print(paste("Chi-Square Test with Monte Carlo Simulation for", var))
+  print(chisq_test)
+}
+
+# Plant_SR and Grasses:
+# 
+# Chi-Square Test: p-value = 0.01399 (significant)
+
+# Plant_SR and Short.Herbs:
+# Chi-Square Test: p-value = 0.02249 (significant)
+
+
+# Plant_SR and Tall.Herbs:
+# Chi-Square Test: p-value = 0.04498 (significant)
+
+# Plant_SR and Legumes:
+# Chi-Square Test: p-value = 0.07746 (not significant)
+
+# Plant_SR has significant associations with Grasses, Short.Herbs, and 
+# Tall.Herbs in all tests, indicating moderate positive associations. Legumes has a significant
+# trend but not in the Chi-Square Test, suggesting a weaker relationship.
+
+
+# Binary vs Binary
+binary_vars <- c("Grasses", "Short.Herbs", "Tall.Herbs", "Legumes")
+for (i in 1:(length(binary_vars)-1)) {
+  for (j in (i+1):length(binary_vars)) {
+    var1 <- binary_vars[i]
+    var2 <- binary_vars[j]
+    
+    table <- table(env_dat[[var1]], env_dat[[var2]])
+    chisq_test <- chisq.test(table)
+    phi <- assocstats(table)$phi
+    
+    print(paste("Chi-Square Test and Phi Coefficient for", var1, "and", var2))
+    print(chisq_test)
+    print(paste("Phi Coefficient:", phi))
+  }
+}
+
+# Grasses and Short.Herbs:
+#   
+# Chi-Square Test: X-squared = 3.1063, p-value = 0.07799
+# Phi Coefficient: 0.222
+# p-value > 0.05, no statistically significant association. Phi Coefficient suggests a weak positive association
+
+# Grasses and Tall.Herbs:
+#   
+# Chi-Square Test: X-squared = 1.6502, p-value = 0.1989
+# Phi Coefficient: 0.169
+# p-value > 0.05, no statistically significant association. Phi Coefficient suggests a weak positive association
+
+# Grasses and Legumes:
+#   
+# Chi-Square Test: X-squared = 0.075883, p-value = 0.783
+# Phi Coefficient: 0.056
+# p-value > 0.05, no significant association. Phi Coefficient suggests a very weak association.
+
+# Short.Herbs and Tall.Herbs:
+#   
+# Chi-Square Test: X-squared = 0.07291, p-value = 0.7871
+# Phi Coefficient: 0.055
+# p-value > 0.1, no significant association. Phi Coefficient suggests a very weak association.
+
+# Short.Herbs and Legumes:
+#   
+# Chi-Square Test: X-squared = 3.1063, p-value = 0.07799
+# Phi Coefficient: 0.222
+# p-value > 0.05, no statistically significant association. Phi Coefficient suggests a weak positive association.
+
+# Tall.Herbs and Legumes:
+#   
+# Chi-Square Test: X-squared = 1.6502, p-value = 0.1989
+# Phi Coefficient: 0.169
+# p-value > 0.05, no statistically significant association. Phi Coefficient suggests a weak positive association.
+
+
+# Binary vs. Binary: Most pairs of binary variables do not show significant associations (p-value > 0.05).
+# The Phi Coefficients suggest weak to very weak associations.
+
+# Overall: The results suggest that while there are moderate positive associations between Plant_SR and some of 
+# the binary variables, the binary variables themselves are mostly weakly associated with each other.
+
+
+
+
