@@ -238,6 +238,7 @@ summary(perm_stat_taxa)
 
 densityplot(perm_stat_taxa)
 
+ main
 
 # # Plotting correlation matrix among vegetation types and plant_sr
 # 
@@ -370,3 +371,5 @@ for (i in 1:(length(binary_vars)-1)) {
 
 
 
+
+ main
