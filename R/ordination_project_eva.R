@@ -16,8 +16,8 @@ library(ggrepel)
 
 
 # Datasets ----
-taxa_dat <- read_csv("../data/JenaExp_arthropod_taxa.csv")
-treatments <- read_csv("../data/JenaExp_treatments.csv")
+taxa_dat <- read_csv("data/JenaExp_arthropod_taxa.csv")
+treatments <- read_csv("data/JenaExp_treatments.csv")
 
 
 
@@ -70,25 +70,25 @@ community_matrix <- taxa_dat[,-1] %>%
 # PCA - Unconstrained ---- 
 #............................
 
-# ## 1. on raw data
-# # from lucas' script
-# pca_sp_raw <- rda(taxa_dat[,-1], 
-#                   scale = FALSE)
-# 
-# pca_sp_raw
-# 
-# screeplot(pca_sp_raw, bstick = TRUE, type = "l",
-#           main = NULL) # only PCA1 lay above the line!
-# 
-# # ..and 
-# summary(eigenvals(pca_sp_raw)) # our eigenvalues don't make to much sense
-# 
-# # they look fucking weird as well
-# ordiplot (pca_sp_raw, scaling = "symmetric") 
-# biplot(pca_sp_raw, scaling = "symmetric")
+## 1. on raw data ----
+# from lucas' script
+pca_sp_raw <- rda(taxa_dat[,-1], 
+                  scale = FALSE)
+
+pca_sp_raw
+
+screeplot(pca_sp_raw, bstick = TRUE, type = "l",
+          main = NULL) # only PCA1 lay above the line!
+
+# ..and 
+summary(eigenvals(pca_sp_raw)) # our eigenvalues don't make to much sense
+
+# they look fucking weird as well
+ordiplot (pca_sp_raw, scaling = "symmetric") 
+biplot(pca_sp_raw, scaling = "symmetric")
 
 
-## On transformed data ----
+## 2. on transformed data ----
 set.seed(1)
 
 pca_sp_trans <- rda(community_matrix[,-1])
@@ -321,13 +321,13 @@ gamma_diversity_simpson
 beta_diversity
 # Calculate summary statistics for beta diversity
 mean(beta_diversity) # average
-# 0.329236
+# 0.329235778643104
 
 min(beta_diversity) # minimum
-# 0.055346
+# 0.0553459119496855
 
 max(beta_diversity) # maximum
-# 0.790218
+# 0.790218394340203
 
 
 # # Visualize beta diversity with a heatmap
@@ -386,7 +386,7 @@ plot(envfit_result, p.max = 0.05, col = "red")
 
 
 
-## Plotting ordination diagram using ggplot  --> TOTALLY TOO MUCH BUT MIGHT BE NICE TO HAVE ALL CONCENTRATED ----
+# Plotting ordination diagram using ggplot  --> TOTALLY TOO MUCH BUT MIGHT BE NICE TO HAVE ALL CONCENTRATED ----
 # Extract PCA site scores
 site_scores <- scores(pca_sp_trans, display = "sites", scaling = 2)
 site_scores_df <- as.data.frame(site_scores)
@@ -414,7 +414,7 @@ p <- ggplot() +
   # Plot species scores with ggrepel to avoid overlap and larger font size
   geom_text_repel(data = species_scores_df, aes(x = PC1, y = PC2, label = taxa), color = "red", size = 3, max.overlaps = 20) +
   # Plot environmental vectors with larger font size
-  geom_segment(data = envfit_vectors, aes(x = 0, xend = PC1, y = 0, yend = PC2), arrow = arrow(length = unit(0.3, "cm")), color = "blue") +
+  geom_segment(data = envfit_vectors, aes(x = 0, xend = PC1, y = 0, yend = PC2), arrow = arrow(length = unit(0.3, "cm")), color = "red") +
   geom_text_repel(data = envfit_vectors, aes(x = PC1, y = PC2, label = variable), color = "blue", size = 5, max.overlaps = 20) +
   # Additional plot styling
   scale_color_manual(values = col_vec) +
@@ -481,13 +481,13 @@ permanova_result <- adonis2(dis_bc_taxa ~ Plant_SR + Grasses + Short.Herbs + Tal
 # Print the results
 print(permanova_result)
 #             Df SumOfSqs      R2       F Pr(>F)    
-# Plant_SR     1  0.06867 0.05340  5.4448  0.001 ***  # 5.34 % of the variation explained by Plant_SR, however the relationship is statistically significant (p < 0.01)
-# Grasses      1  0.12997 0.10107 10.3059  0.001 ***  # 10 % of the variation attributed to the presence or absence of grasses (highest), relationship significant
-# Short.Herbs  1  0.05938 0.04618  4.7086  0.001 ***  # 4.6 % of variation attributed to short herbs, relationship significant
-# Tall.Herbs   1  0.03213 0.02498  2.5473  0.022 *    # 2.5 % of variation, relationship significant
-# Legumes      1  0.06260 0.04868  4.9642  0.002 ***  # 4.9 % ofvariation, relationship significant
-# Residual    74  0.93323 0.72570                     # 73 % of the data variation is derived from factors that are not our vegetation types.
-# Total       79  1.28598 1.00000                     # ? IS THE FACT THAT MOST VARIABILITY IS INDEPENDENT OF OUR ENVIRONMENTAL VARIABLES AN EXTRA ARGUMENT FOR UNCONSTRAINED?
+# Plant_SR     1  0.06867 0.05340  5.4448  0.001 ***  # only 5.34 % of the variation explained by Plant_SR, however the relationship is statistically significant (p < 0.01)
+# Grasses      1  0.12997 0.10107 10.3059  0.001 ***  # 10% of the valiation attributed to the presence or absence of grasses (highest )
+# Short.Herbs  1  0.05938 0.04618  4.7086  0.001 ***
+# Tall.Herbs   1  0.03213 0.02498  2.5473  0.022 *  
+# Legumes      1  0.06260 0.04868  4.9642  0.002 ***
+# Residual    74  0.93323 0.72570                     # 73% of the data variation is derived from factors that are not our vegetation types          
+# Total       79  1.28598 1.00000 
 
 
 set.seed(1)
@@ -538,42 +538,6 @@ densityplot(perm_stat_taxa_dp)
 
 
 
-# CA --> 66% of variance captured in CA1 and CA2, not bad at all ----
-par(mfrow=c(1,1))
-ca <- cca(taxa_dat[-1])
-plot(ca)
-ca
-scores(ca)
-summary(eigenvals(ca))
-# Importance of components:
-#                          CA1     CA2
-# Eigenvalue            0.1705 0.06376 
-# Proportion Explained  0.4790 0.17909
-# Cumulative Proportion 0.4790 0.65808
-
-screeplot(ca, bstick = TRUE, type = "l",
-          main = NULL) # BUUUT Only CA1 above the line
-
-ordiplot(ca, scaling = "symmetric") 
-
-set.seed(1)
-ordipointlabel(ca,
-               display = "sites",
-               scaling = "symmetric")
-
-
-set.seed(1)
-plot(ca, display = "sites",
-     scaling = "symmetric", type = "n")
-points(ca, display = "sites",
-       scaling = "symmetric", pch = 19,
-       col = "orange")
-ordipointlabel(ca,
-               display = "sites",
-               scaling = "symmetric",
-               add = TRUE)
-
-
 
 #........................
 # RDA - Constrained? ----
@@ -589,25 +553,6 @@ summary(eigenvals(rda_taxa))
 # Eigenvalue            0.01104 0.005351
 # Proportion Explained  0.15734 0.076281
 # Cumulative Proportion 0.15734 0.233618
-
-ordiplot(ca, scaling = "symmetric") 
-
-set.seed(1)
-ordipointlabel(ca,
-               display = "sites",
-               scaling = "symmetric")
-
-
-set.seed(1)
-plot(ca, display = "sites",
-     scaling = "symmetric", type = "n")
-points(ca, display = "sites",
-       scaling = "symmetric", pch = 19,
-       col = "orange")
-ordipointlabel(ca,
-               display = "sites",
-               scaling = "symmetric",
-               add = TRUE)
 
 # permutations default
 set.seed(1)

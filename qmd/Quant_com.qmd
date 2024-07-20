@@ -70,8 +70,7 @@ The PCA projection revealed important changes in arthropod composition along the
 
 **Figure 1.** Principal component analysis of the Hellinger-transformed species composition: **sample plots** (eigenvectors are scaled to unit length)
 
-**Figure 2.** Principal component analysis of the Hellinger-transformed species composition: **species** (each eigenvector is scaled to the square root of
-its eigenvalue)
+**Figure 2.** Principal component analysis of the Hellinger-transformed species composition: **species** (each eigenvector is scaled to the square root of its eigenvalue)
 
 **Figure 3.** Principal component analysis of the Hellinger-transformed species composition: **fitted significant variables**.
 

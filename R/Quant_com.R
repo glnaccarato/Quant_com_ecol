@@ -19,7 +19,6 @@ spec_dat <- read.csv("data/JenaExp_arthropod_taxa.csv")
 # import environmental data
 env_dat <- read.csv("data/JenaExp_treatments.csv")
 
-
 ### Exploration of data --------------------------------------------------------
 
 # check both data sets for NA‘s
@@ -42,6 +41,7 @@ summary[order(summary$treatment), ] # unbalanced sampling design
 
 # graphical data exploration (abundances of different arthropod taxa)
 par(mar = c(3, 7, 2, 2))
+
 boxplot(spec_dat[, 2:12],
         horizontal = TRUE,
         col = "#CD0000",
@@ -56,7 +56,7 @@ boxplot(spec_dat_hell,
         horizontal = TRUE,
         col = "#CD0000",
         las = 2,
-        main = "Transformed Abundance") # better
+        main = " Hellinger-Transformed Abundance") # better
 
 par(mfrow = c(1,1))
 
@@ -65,10 +65,7 @@ par(mfrow = c(1,1))
 # double check gradient length of first DCA axis (only optional)
 decorana(spec_dat_hell) # 0.875 < 3 SD = linear methods are applicable
 
-# check for multicollinearity among predictor variables 
-pairs.panels(env_dat[, -1], method = "spearman")
-
-# PCA on Hellinger-transformed data
+# PCA on "psych"# PCA on Hellinger-transformed data
 pca_spec <- rda(spec_dat_hell, 
                 scale = FALSE) # species data is already on the same scale
 
@@ -90,7 +87,9 @@ summary(eigenvals(pca_spec)) # cumulative proportion of PC1 + PC2 = 58.44%
 # extract species scores with correct scaling (Bocard et al. 2011)
 species.scrs <- scores(pca_spec, display=c("sp"),
                       scaling = "symmetric") %>% 
-  as_tibble(rownames = "species_name") 
+  as_tibble(rownames = "species_name") %>% 
+  mutate(acronyms = c("Ara", "Car", "Chi", "Cic", "Col", "Dip", 
+                    "Het", "Iso","Opi", "Ort", "Sta")) # acronyms for plotting 
 species.scrs
 
 # extract site scores with correct scaling (Bocard et al. 2011)
@@ -118,14 +117,16 @@ fit
 # extract only significant p-values
 env.scrs_sig <- as_tibble(scores(fit, display = "vectors")) %>% # extract scores
   mutate(p.value = fit$vectors$pvals, # extract p-values
-         Env.variables = colnames(env_dat[2:6])) %>% # get variable names
+         Env.variables = colnames(env_dat[2:6]), # get variable names
+         Env_renamed = c("PSR","Grasses","Short Herbs", # rename variables
+                        "Tall Herbs","Legumes")) %>% 
   subset(p.value<=0.05) # exclude non-significant variables 
 
-env.scrs_sig
+head(env_dat)
 
 ### Plotting PCA results using the ggplot --------------------------------------
 
-# Figure 1: PCA ordination plot of sites/plots and significant environmental 
+# Figure 1: PCA ordination plot of plots and significant environmental 
 # variables with plots colored by plant species richness 
 ggplot(site.scrs)+
   geom_hline(yintercept = 0, color="grey", lty =1) +
@@ -143,7 +144,7 @@ ggplot(site.scrs)+
                                    fill = "white", 
                                    size = 0.1, 
                                    linetype = "solid"))+
-  geom_text_repel(data = env.scrs_sig, aes(PC1, PC2*1.2, label = Env.variables), 
+  geom_text_repel(data = env.scrs_sig, aes(PC1, PC2*1.2, label = Env_renamed), 
                   color = "#008B45", size = 3)
 
 ggsave("PCA_plots.png", width = 15, height = 15, units = "cm")
@@ -155,17 +156,24 @@ ggplot(species.scrs)+
   geom_hline(yintercept = 0, color="grey", lty =1) +
   geom_vline(xintercept = 0, color="grey", lty =1) +
   theme_bw()+
-  labs(x = "PC1",
-       y = "PC2") +
+  labs(x = "PC1", y = "PC2") +
   guides(color = guide_legend(title = "No. of Plant Species"))+ # manual legend
-  geom_text_repel(aes(PC1*1.3, PC2*1.3,label = species_name), 
-                  cex = 3.5, direction = "both",
-                  color = "#CD0000")
+  geom_text_repel(aes(PC1, PC2,label = acronyms), 
+                  cex = 3.5, direction = "both", color = "#CD0000")
 
 ggsave("PCA_species.png", width = 15, height = 12, units = "cm")
 
 
 ### Data visualization --------------------------------------------------------- 
+
+spec_dat_rel <- as_tibble(
+  spec_dat[, -1] / rowSums(spec_dat[, -1])) %>% # calculate rel. abundances
+  mutate(Plant_SR = as.factor(env_dat$Plant_SR)) %>% # add factorized Plat_SR
+  pivot_longer(cols = 1:11, # bring taxa columnns into wider format
+               names_to = "Taxa",
+               values_to = "Abundances") %>% 
+  group_by(Taxa, Plant_SR) %>% 
+  summarise(tot_rel_abundance = mean(Abundances))
 
 # Figure 3: Percent stacked bar plot
 ggplot(spec_dat_rel, aes(x=Plant_SR, y=tot_rel_abundance, fill = Taxa))+
