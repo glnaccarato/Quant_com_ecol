@@ -3,6 +3,7 @@
 # Load needed libraries and set default theme for ggplot
 library(betapart)
 library(iNEXT)
+library(ggh4x)
 library(readxl)
 library(tidyverse)
 library(vegan)
@@ -68,6 +69,11 @@ ggplot(data_alpha_l, aes(elevation_m, value,
        y = "Value") +
   guides(color = "none", fill = "none")
 
+summary(glm(S ~ elevation_m, data = data_alpha, family = "quasipoisson"))
+summary(glm(hill_shannon ~ elevation_m, data = data_alpha, family = "quasipoisson"))
+summary(glm(hill_simpson ~ elevation_m, data = data_alpha, family = "quasipoisson"))
+summary(glm(evenness ~ elevation_m, data = data_alpha, family = "quasipoisson"))
+
 
   ## 2.2 - Gamma diversity ----
 
@@ -115,6 +121,11 @@ ggplot(data_gamma_l, aes(elevation_m, value,
        y = "Value") +
   guides(color = "none", fill = "none")
 
+summary(glm(S ~ elevation_m, data = data_gamma, family = "quasipoisson"))
+summary(glm(hill_shannon ~ elevation_m, data = data_gamma, family = "quasipoisson"))
+summary(glm(hill_simpson ~ elevation_m, data = data_gamma, family = "quasipoisson"))
+summary(glm(evenness ~ elevation_m, data = data_gamma, family = "quasipoisson"))
+
 
 # 3 - Standardized comparisons ----
 
@@ -144,6 +155,7 @@ data_div <- data_gamma %>%
   select(elevation_m)
 data_div$S_t16 <- sbr_dat$qD
 
+summary(glm(S_t16 ~ elevation_m, data = data_div, family = "quasipoisson"))
 
   ## 3.2 - Individual-based rarefaction ----
 
@@ -156,17 +168,21 @@ ggiNEXT(inext) +
   scale_shape_manual(breaks = elevations, values = rep(23, times = 28)) +
   labs(title = "Rarefaction/extrapolation of species richness by sample size")
 # Too many levels for plotting rarefaction curves
-rm(inext)
 
 ibr_dat <- estimateD(inext_table, q = 0, base = "size") 
 ibr_dat
 
 data_div$S_n12 <- ibr_dat$qD
 
+summary(glm(S_t16 ~ elevation_m, data = data_div, family = "quasipoisson"))
+
 
   ## 3.3 - Coverage-based rarefaction ----
  
 ggiNEXT(inext, type = 3)
+# Again, not really informative
+rm(inext)
+
 cbr_dat <- estimateD(inext_table, q = 0, base = "coverage")
 cbr_dat
 
@@ -175,12 +191,17 @@ cbr_dat
 # for samples extrapolated to double the reference sample sizes.
 
 data_div$S_cov95 <- cbr_dat$qD
+summary(glm(S_cov95 ~ elevation_m, data = data_div, family = "quasipoisson"))
 
+# Change to long format
 data_div_l <- data_div %>% 
   pivot_longer(S_t16:S_cov95, names_to = "index", values_to = "value") %>% 
   mutate(index = factor(index, levels = c("S_t16", "S_n12", "S_cov95")))
 
+# Define color palette
 ibm_pal <- c("#648FFF", "#DC267F", "#FFB000")
+
+# Plot standardised S by elevation
 ggplot(data_div_l, aes(elevation_m, value, color = index, fill = index)) +
   geom_point(shape = 21, color = "black") +
   geom_smooth(se = T, method = "lm") +
@@ -190,6 +211,7 @@ ggplot(data_div_l, aes(elevation_m, value, color = index, fill = index)) +
   scale_fill_manual(values = ibm_pal) +
   labs(x = "Elevation (m)",
        y = "Value")
+
 
 # 4 - Beta diversity ----
 
@@ -253,10 +275,20 @@ ggplot(data_beta_l, aes(elevation_m, value, color = index, fill = index)) +
   geom_point(color = "black", shape = 21) +
   geom_smooth(se = T, method = "lm") +
   facet_wrap(~index, scales = "free") +
-  labs(title = "Beta diversity along the elevational gradient",
+  labs(#title = "Beta diversity along the elevational gradient",
        x = "Elevation (m)",
        y = "Value") +
-  guides(color = "none", fill = "none")
+  guides(color = "none", fill = "none") +
+  # Using ggh4x::facetted_pos_scales to set scale limits for single facets
+  facetted_pos_scales(
+    y = list(index == "prop_nest" ~ ylim(0, 1),
+             index == "prop_turn" ~ ylim(0, 1))
+  ) 
+
+summary(glm(beta.SOR ~ elevation_m, data = data_beta, family = "quasipoisson"))
+summary(glm((beta.SNE / beta.SOR) ~ elevation_m, data = data_beta, family = "quasipoisson"))
+summary(glm((beta.SIM / beta.SOR) ~ elevation_m, data = data_beta, family = "quasipoisson"))
+
 
 # We can see that overall beta diversity (Sørensen dissimilarity) shows a
 # slight decrease at higher elevations, even though variance gets much higher.
@@ -269,9 +301,17 @@ ggplot(data_beta_l[1:81,], aes(elevation_m, value, color = index, fill = index))
   geom_point(color = "black", shape = 21) +
   geom_smooth(se = T, method = "lm") +
   facet_wrap(~index, scales = "free") +
-  labs(title = "Beta diversity along the elevational gradient",
+  labs(#title = "Beta diversity along the elevational gradient",
        x = "Elevation (m)",
        y = "Value") +
-  guides(color = "none", fill = "none")
+  guides(color = "none", fill = "none") +
+  facetted_pos_scales(
+    y = list(index == "prop_nest" ~ ylim(0, 1),
+             index == "prop_turn" ~ ylim(0, 1))
+  )
 # Doesn't really change the outcome, even though the decrease in overall beta
 # is more clear - keeping it for the sake of completeness.
+
+summary(glm(beta.SOR ~ elevation_m, data = data_beta[1:27,], family = "quasipoisson"))
+# Relationship between beta and elevation not significant,
+# even after taking out outlier
