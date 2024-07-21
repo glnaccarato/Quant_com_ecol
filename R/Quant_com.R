@@ -20,7 +20,7 @@ library(viridis)  # only for color palette
 library(ggrepel)
 
 # set working directory 
-setwd("/Users/gianlucanaccarato/Documents/Dokumente/GitHub/Quant_com_ecol")
+setwd("<replace_with_your_own_wd>")
 
 # import species data
 spec_dat <- read.csv("data/JenaExp_arthropod_taxa.csv")
