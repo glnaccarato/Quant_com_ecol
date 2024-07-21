@@ -1,5 +1,15 @@
 # Task 2 -----------------------------------------------------------------------
 
+# Taxonomic composition of arthropods along plant diversity 
+# gradient in the Jena Experiment
+
+# Final Analysis for the course Quantitative Community Ecology
+
+# Submitted by
+# Evangelos Karapoulios
+# Gian Luca Naccarato 
+# Julian Nico Thiem
+
 ## Preparation -----------------------------------------------------------------
 
 # libraries needed
@@ -8,9 +18,8 @@ library(vegan)
 library(ggplot2)
 library(viridis)  # only for color palette
 library(ggrepel)
-library(psych) # for (visual) inspection of multicollinearity
 
-# set working directory (only for my personal usage)
+# set working directory 
 setwd("/Users/gianlucanaccarato/Documents/Dokumente/GitHub/Quant_com_ecol")
 
 # import species data
